@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Install dependencies
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn config set registry https://registry.npmmirror.com && yarn install --frozen-lockfile --network-timeout 600000
 
 # Copy source and build
 COPY index.html tsconfig.json vite.config.ts eslint.config.js ./
@@ -51,7 +51,7 @@ COPY py-src ./py-src
 COPY --from=frontend-builder /app/py-src/data_formulator/dist ./py-src/data_formulator/dist
 
 # Install the package and its dependencies
-RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple .
 
 # Switch to non-root user and ensure workspace and app directories are owned by it
 RUN mkdir -p "${DATA_FORMULATOR_HOME}" && chown -R appuser:appuser /app "${DATA_FORMULATOR_HOME}"
